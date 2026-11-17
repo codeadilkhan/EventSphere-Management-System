@@ -1,0 +1,19 @@
+{
+  "name": "eventsphere-management-system",
+  "version": "1.0.0",
+  "description": "EventSphere Trade-Show & Expo Management Platform - Aptech eProject",
+  "scripts": {
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "seed": "node seed/seed.js",
+    "test": "npm run test --prefix server"
+  },
+  "keywords": [
+    "eventsphere",
+    "expo",
+    "trade-show",
+    "mern"
+  ],
+  "author": "Aptech eProject Team",
+  "license": "ISC"
+}

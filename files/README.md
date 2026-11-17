@@ -1,0 +1,22 @@
+# Task Index & Progress Tracker
+
+Work in order. Update the status after every session.
+Status: ⬜ Not started · 🟨 In progress · ✅ Done
+
+| # | Task file | Phase | Status | Notes / blockers |
+|---|---|---|---|---|
+| 01 | task-01-setup.md | Setup & foundation | ⬜ | |
+| 02 | task-02-auth.md | Authentication & roles | ⬜ | |
+| 03 | task-03-expo-booth.md | Expo & booth management | ⬜ | |
+| 04 | task-04-exhibitor.md | Exhibitor module | ⬜ | |
+| 05 | task-05-schedule-attendee.md | Schedule & attendee module | ⬜ | |
+| 06 | task-06-realtime-messaging.md | Real-time & messaging | ⬜ | |
+| 07 | task-07-notifications-feedback.md | Notifications & feedback | ⬜ | |
+| 08 | task-08-analytics.md | Analytics & reporting | ⬜ | |
+| 09 | task-09-nfr-security.md | Non-functional hardening | ⬜ | |
+| 10 | task-10-testing.md | Testing & QA | ⬜ | |
+| 11 | task-11-docs-video.md | Docs, video, submission | ⬜ | |
+
+## Task file format
+Each file has: **Goal → Prerequisites → Subtasks (checkboxes) → Acceptance criteria → If stuck → Done**.
+Subtask IDs (e.g. `T02.3`) can be used in commit messages: `feat(T02.3): add login endpoint`.
