@@ -121,6 +121,17 @@ const getSessionById = asyncHandler(async (req, res, next) => {
     return next(new ApiServiceException('Session not found.', 404));
   }
 
+  // Safely record session view event
+  const { logEvent } = require('../services/analyticsService');
+  logEvent({
+    type: 'session_view',
+    expoId: session.expoId?._id || session.expoId,
+    refId: session._id,
+    refModel: 'Session',
+    userId: req.user?.id || null,
+    metadata: { title: session.title, hall: session.hall },
+  }).catch(() => {});
+
   return sendFormattedResponse(res, 200, true, { session }, 'Session details retrieved.');
 });
 

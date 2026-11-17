@@ -35,6 +35,7 @@ import { ExhibitorDirectory } from './pages/events/ExhibitorDirectory';
 import { ChatPage } from './pages/messages/ChatPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { AdminFeedback } from './pages/admin/AdminFeedback';
+import { AdminAnalytics } from './pages/admin/AdminAnalytics';
 import { NotFound } from './pages/NotFound';
 
 function App() {
@@ -92,7 +93,7 @@ function App() {
               <Route path="messages" element={<ChatPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="feedback" element={<AdminFeedback />} />
-              <Route path="analytics" element={<AdminDashboard />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
             </Route>
 
             {/* Exhibitor Protected Dashboard Routes */}

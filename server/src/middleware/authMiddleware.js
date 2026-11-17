@@ -53,4 +53,5 @@ const authorize = (...permittedRoles) => {
 module.exports = {
   protect,
   authorize,
+  restrictTo: authorize,
 };

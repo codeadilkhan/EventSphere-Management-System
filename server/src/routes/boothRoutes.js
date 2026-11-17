@@ -8,6 +8,7 @@ const boothRouter = express.Router();
 
 // Public: view floor plan booths for an expo
 boothRouter.get('/expo/:expoId', boothController.getBoothsByExpo);
+boothRouter.get('/:id', boothController.getBoothById);
 
 // Admin-managed routes
 boothRouter.post(

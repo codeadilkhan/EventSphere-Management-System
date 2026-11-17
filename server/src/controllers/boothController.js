@@ -327,8 +327,35 @@ const reserveBoothByExhibitor = asyncHandler(async (req, res, next) => {
   );
 });
 
+// Get Single Booth Details (with analytics view event)
+const getBoothById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const booth = await Booth.findById(id)
+    .populate('exhibitorId', 'name email phone')
+    .populate('expoId', 'title venue city startDate endDate');
+
+  if (!booth) {
+    return next(new ApiServiceException('Booth not found.', 404));
+  }
+
+  // Safely record analytics event
+  const { logEvent } = require('../services/analyticsService');
+  logEvent({
+    type: 'booth_view',
+    expoId: booth.expoId?._id || booth.expoId,
+    refId: booth._id,
+    refModel: 'Booth',
+    userId: req.user?.id || null,
+    metadata: { boothNumber: booth.boothNumber, category: booth.category },
+  }).catch(() => {});
+
+  return sendFormattedResponse(res, 200, true, { booth }, 'Booth details retrieved.');
+});
+
 module.exports = {
   getBoothsByExpo,
+  getBoothById,
   createBooth,
   bulkGenerateBooths,
   updateBooth,

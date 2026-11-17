@@ -14,6 +14,12 @@ jest.mock('../src/models/Expo');
 jest.mock('../src/models/ExhibitorProfile');
 jest.mock('../src/models/Notification');
 jest.mock('../src/models/Booth');
+jest.mock('../src/models/AnalyticsEvent');
+jest.mock('../src/services/analyticsService', () => ({
+  logEvent: jest.fn().mockResolvedValue(true),
+  seedSampleEventsIfEmpty: jest.fn().mockResolvedValue(true),
+  setSocketIoInstance: jest.fn(),
+}));
 
 describe('Task 05: Schedule Management & Attendee Module Tests', () => {
   afterEach(() => {

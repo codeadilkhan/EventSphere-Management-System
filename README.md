@@ -12,7 +12,7 @@ Status: ⬜ Not started · 🟨 In progress · ✅ Done
 | 05 | task-05-schedule-attendee.md | Schedule & attendee module | ✅ | Completed & Verified |
 | 06 | task-06-realtime-messaging.md | Real-time & messaging | ✅ | Completed & Verified |
 | 07 | task-07-notifications-feedback.md | Notifications & feedback | ✅ | Completed & Verified |
-| 08 | task-08-analytics.md | Analytics & reporting | ⬜ | |
+| 08 | task-08-analytics.md | Analytics & reporting | ✅ | Completed & Verified |
 | 09 | task-09-nfr-security.md | Non-functional hardening | ⬜ | |
 | 10 | task-10-testing.md | Testing & QA | ⬜ | |
 | 11 | task-11-docs-video.md | Docs, video, submission | ⬜ | |

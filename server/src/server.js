@@ -18,11 +18,13 @@ const io = new Server(server, {
 
 // Initialize socket manager with JWT authentication and room handlers
 const { initializeSocketManager } = require('./sockets/socketManager');
-const { setSocketIoInstance } = require('./services/notificationService');
+const { setSocketIoInstance: setNotificationSocket } = require('./services/notificationService');
+const { setSocketIoInstance: setAnalyticsSocket } = require('./services/analyticsService');
 const { startReminderCron } = require('./services/reminderCron');
 
 const socketManager = initializeSocketManager(io);
-setSocketIoInstance(io);
+setNotificationSocket(io);
+setAnalyticsSocket(io);
 
 // Attach socket io and socketManager to express app instance for access in controllers
 app.set('socketio', io);

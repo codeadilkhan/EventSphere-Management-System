@@ -2,6 +2,7 @@ const Registration = require('../models/Registration');
 const Session = require('../models/Session');
 const Expo = require('../models/Expo');
 const Notification = require('../models/Notification');
+const { logEvent } = require('../services/analyticsService');
 const { ApiServiceException, asyncHandler, sendFormattedResponse } = require('../utils/helpers');
 
 // Register for an Expo (Attendee)
@@ -42,6 +43,14 @@ const registerForExpo = asyncHandler(async (req, res, next) => {
     message: `You are officially registered for "${expo.title}". Welcome!`,
     link: `/events/${expo._id}`,
   });
+
+  // Log analytics event
+  logEvent({
+    type: 'register',
+    expoId,
+    userId: req.user.id,
+    metadata: { registrationType: 'expo' },
+  }).catch(() => {});
 
   return sendFormattedResponse(
     res,
@@ -128,6 +137,16 @@ const registerForSession = asyncHandler(async (req, res, next) => {
     link: '/events/my-schedule',
   });
 
+  // Log analytics event
+  logEvent({
+    type: 'register',
+    expoId: session.expoId._id || session.expoId,
+    refId: session._id,
+    refModel: 'Session',
+    userId: req.user.id,
+    metadata: { registrationType: 'session', sessionTitle: session.title },
+  }).catch(() => {});
+
   return sendFormattedResponse(
     res,
     201,
@@ -189,6 +208,17 @@ const toggleBookmark = asyncHandler(async (req, res, next) => {
       type: 'session',
       bookmarked: true,
     });
+  }
+
+  if (record.bookmarked) {
+    logEvent({
+      type: 'bookmark',
+      expoId: session.expoId,
+      refId: session._id,
+      refModel: 'Session',
+      userId: req.user.id,
+      metadata: { sessionTitle: session.title },
+    }).catch(() => {});
   }
 
   return sendFormattedResponse(

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { analyticsService } from '../../services/analyticsService';
+import { expoService } from '../../services/expoService';
 import {
   Shield,
   Calendar,
@@ -13,11 +15,50 @@ import {
   FileCheck2,
   BarChart3,
   CheckCircle2,
-  Clock
+  Clock,
+  Sparkles,
+  DollarSign
 } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const { user } = useAuth();
+  const [stats, setStats] = useState({
+    activeExpos: 0,
+    occupancyRate: 0,
+    allocatedBooths: 0,
+    totalBooths: 0,
+    totalAttendees: 0,
+    totalRevenue: 0,
+    totalSessions: 0,
+  });
+
+  useEffect(() => {
+    const fetchLiveStats = async () => {
+      try {
+        const [overviewRes, exposRes] = await Promise.all([
+          analyticsService.getOverview('ALL'),
+          expoService.getExpos(),
+        ]);
+
+        const ov = overviewRes.overview || {};
+        const exposList = exposRes.data?.expos || exposRes.expos || [];
+
+        setStats({
+          activeExpos: exposList.length || 0,
+          occupancyRate: ov.booths?.occupancyRate || 0,
+          allocatedBooths: ov.booths?.allocated || 0,
+          totalBooths: ov.booths?.total || 0,
+          totalAttendees: ov.totalAttendees || 0,
+          totalRevenue: ov.booths?.totalRevenue || 0,
+          totalSessions: ov.sessions?.total || 0,
+        });
+      } catch (err) {
+        console.warn('Dashboard stats load fallback:', err);
+      }
+    };
+
+    fetchLiveStats();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -45,6 +86,13 @@ export const AdminDashboard = () => {
               <PlusCircle className="w-4 h-4" />
               Manage Expos
             </Link>
+            <Link
+              to="/admin/analytics"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs transition-all border border-white/20"
+            >
+              <BarChart3 className="w-4 h-4" />
+              Analytics Hub
+            </Link>
           </div>
         </div>
       </div>
@@ -59,10 +107,10 @@ export const AdminDashboard = () => {
             </div>
           </div>
           <div>
-            <span className="text-2xl font-extrabold text-slate-900">4</span>
-            <span className="text-[11px] text-emerald-600 font-semibold ml-2">● 2 Live Now</span>
+            <span className="text-2xl font-extrabold text-slate-900">{stats.activeExpos}</span>
+            <span className="text-[11px] text-emerald-600 font-semibold ml-2">● Live System</span>
           </div>
-          <p className="text-[11px] text-slate-400">Scheduled across 2026 calendar</p>
+          <p className="text-[11px] text-slate-400">Scheduled across EventSphere</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
@@ -73,38 +121,44 @@ export const AdminDashboard = () => {
             </div>
           </div>
           <div>
-            <span className="text-2xl font-extrabold text-slate-900">78%</span>
-            <span className="text-[11px] text-purple-600 font-semibold ml-2">156/200</span>
+            <span className="text-2xl font-extrabold text-slate-900">{stats.occupancyRate}%</span>
+            <span className="text-[11px] text-purple-600 font-semibold ml-2">
+              {stats.allocatedBooths}/{stats.totalBooths}
+            </span>
           </div>
-          <p className="text-[11px] text-slate-400">44 available stalls remaining</p>
+          <p className="text-[11px] text-slate-400">
+            {Math.max(0, stats.totalBooths - stats.allocatedBooths)} vacant stalls available
+          </p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Exhibitor Apps</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <FileCheck2 className="w-4 h-4" />
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Booth Revenue</span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <span className="text-2xl font-extrabold text-slate-900">12</span>
-            <span className="text-[11px] text-amber-700 font-semibold ml-2">Pending Review</span>
+            <span className="text-2xl font-extrabold text-slate-900">${stats.totalRevenue.toLocaleString()}</span>
+            <span className="text-[11px] text-emerald-600 font-semibold ml-2">Allocated Stalls</span>
           </div>
-          <p className="text-[11px] text-slate-400">Documentation uploaded</p>
+          <p className="text-[11px] text-slate-400">Commercial stall bookings</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Attendees</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <span className="text-2xl font-extrabold text-slate-900">1,420</span>
-            <span className="text-[11px] text-emerald-600 font-semibold ml-2">+18% this wk</span>
+            <span className="text-2xl font-extrabold text-slate-900">{stats.totalAttendees}</span>
+            <span className="text-[11px] text-indigo-600 font-semibold ml-2">
+              {stats.totalSessions} Sessions
+            </span>
           </div>
-          <p className="text-[11px] text-slate-400">Active session registrations</p>
+          <p className="text-[11px] text-slate-400">Registered platform attendees</p>
         </div>
       </div>
 
