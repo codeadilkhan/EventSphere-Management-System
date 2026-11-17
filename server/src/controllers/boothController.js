@@ -3,6 +3,7 @@ const Expo = require('../models/Expo');
 const User = require('../models/User');
 const ExhibitorApplication = require('../models/ExhibitorApplication');
 const Notification = require('../models/Notification');
+const { notify } = require('../services/notificationService');
 const { ApiServiceException, asyncHandler, sendFormattedResponse } = require('../utils/helpers');
 
 // Helper to notify socket clients of booth changes
@@ -211,6 +212,14 @@ const allocateBooth = asyncHandler(async (req, res, next) => {
   }
 
   emitBoothLiveUpdate(req, updatedBooth.expoId, updatedBooth, 'allocated');
+
+  // Dispatch in-app notification to the allocated exhibitor
+  notify(exhibitorId, {
+    type: 'booth_allocated',
+    title: 'Exhibition Stall Officially Allocated',
+    message: `Booth ${updatedBooth.boothNumber} has been allocated to your organization. Review stall specifications in your portal.`,
+    link: `/exhibitor/booths?expoId=${updatedBooth.expoId}`,
+  }).catch(() => {});
 
   return sendFormattedResponse(
     res,

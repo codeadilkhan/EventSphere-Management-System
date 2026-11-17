@@ -1,6 +1,7 @@
 const Session = require('../models/Session');
 const Expo = require('../models/Expo');
 const Registration = require('../models/Registration');
+const { notify } = require('../services/notificationService');
 const { ApiServiceException, asyncHandler, sendFormattedResponse } = require('../utils/helpers');
 
 // Helper to check for overlapping sessions in the same hall
@@ -176,6 +177,21 @@ const updateSession = asyncHandler(async (req, res, next) => {
   const io = req.app.get('socketio');
   if (io) {
     io.to(`expo:${updatedSession.expoId}`).emit('schedule:updated', { action: 'updated', session: updatedSession });
+  }
+
+  // Notify registered attendees about schedule adjustments
+  try {
+    const registrations = await Registration.find({ sessionId: id }).select('attendeeId');
+    for (const reg of registrations) {
+      notify(reg.attendeeId, {
+        type: 'schedule_change',
+        title: 'Schedule Timing Update',
+        message: `Timing or auditorium location for "${updatedSession.title}" has been modified. Check your personal agenda.`,
+        link: '/events/my-schedule',
+      }).catch(() => {});
+    }
+  } catch (err) {
+    console.error('Error notifying attendees on schedule update', err.message);
   }
 
   return sendFormattedResponse(res, 200, true, { session: updatedSession }, 'Session updated.');

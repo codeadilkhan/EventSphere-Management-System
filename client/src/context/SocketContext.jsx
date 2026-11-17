@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { messageService } from '../services/messageService';
+import { notificationService } from '../services/notificationService';
 
 const SocketContext = createContext(null);
 
@@ -15,6 +16,7 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(new Set());
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [liveToast, setLiveToast] = useState(null);
   const activeChatPartnerRef = useRef(null);
 
@@ -23,7 +25,7 @@ export const SocketProvider = ({ children }) => {
     activeChatPartnerRef.current = partnerId;
   }, []);
 
-  // Fetch unread count
+  // Fetch message unread count
   const refreshUnreadCount = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
@@ -33,6 +35,19 @@ export const SocketProvider = ({ children }) => {
       }
     } catch {
       // Non-critical, ignore
+    }
+  }, [isAuthenticated]);
+
+  // Fetch in-app notification unread count
+  const refreshNotificationCount = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await notificationService.getNotifications({ limit: 1 });
+      if (typeof res.data?.unreadCount === 'number') {
+        setNotificationCount(res.data.unreadCount);
+      }
+    } catch {
+      // Non-critical
     }
   }, [isAuthenticated]);
 
@@ -121,13 +136,25 @@ export const SocketProvider = ({ children }) => {
       });
     });
 
+    // Handle live incoming in-app notifications
+    socketInstance.on('notification:new', ({ notification }) => {
+      setNotificationCount((prev) => prev + 1);
+      setLiveToast({
+        id: Date.now(),
+        type: notification?.type || 'system',
+        title: notification?.title || 'Notification Received',
+        description: notification?.message || '',
+      });
+    });
+
     setSocket(socketInstance);
     refreshUnreadCount();
+    refreshNotificationCount();
 
     return () => {
       socketInstance.disconnect();
     };
-  }, [isAuthenticated, token, refreshUnreadCount]);
+  }, [isAuthenticated, token, refreshUnreadCount, refreshNotificationCount]);
 
   // Auto-dismiss live toast after 4 seconds
   useEffect(() => {
@@ -189,6 +216,9 @@ export const SocketProvider = ({ children }) => {
     unreadCount,
     setUnreadCount,
     refreshUnreadCount,
+    notificationCount,
+    setNotificationCount,
+    refreshNotificationCount,
     joinExpo,
     leaveExpo,
     emitTypingStart,

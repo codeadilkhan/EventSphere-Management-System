@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useSocket } from '../../context/SocketContext';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { FeedbackModal } from '../feedback/FeedbackModal';
 import {
   Sparkles,
   LayoutDashboard,
@@ -16,7 +18,8 @@ import {
   Shield,
   Briefcase,
   Users,
-  MessageSquare
+  MessageSquare,
+  HelpCircle
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -26,6 +29,7 @@ export const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -144,11 +148,22 @@ export const Navbar = () => {
           </div>
 
           {/* Auth Actions / User Pill */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
-              <div className="relative">
+              <>
+                <NotificationBell />
                 <button
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  type="button"
+                  onClick={() => setFeedbackOpen(true)}
+                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                  title="Feedback & Inquiries"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                </button>
+
+                <div className="relative ml-1">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-white shadow-sm hover:shadow transition-all text-left"
                 >
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs uppercase">
@@ -195,7 +210,8 @@ export const Navbar = () => {
                   </div>
                 )}
               </div>
-            ) : (
+            </>
+          ) : (
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
@@ -289,6 +305,9 @@ export const Navbar = () => {
           )}
         </div>
       )}
+
+      {/* Inquiries & Feedback Modal */}
+      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </nav>
   );
 };

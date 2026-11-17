@@ -1,6 +1,9 @@
 const ExhibitorApplication = require('../models/ExhibitorApplication');
 const Expo = require('../models/Expo');
+const User = require('../models/User');
 const Notification = require('../models/Notification');
+const { notify } = require('../services/notificationService');
+const { sendApplicationStatusEmail } = require('../services/emailService');
 const { ApiServiceException, asyncHandler, sendFormattedResponse } = require('../utils/helpers');
 
 // Submit Expo Application (Exhibitor)
@@ -150,24 +153,27 @@ const reviewApplication = asyncHandler(async (req, res, next) => {
 
   await application.save();
 
-  // Create Notification for the Exhibitor
-  await Notification.create({
-    userId: application.exhibitorId,
+  // Dispatch in-app and real-time socket notification
+  const expoTitle = application.expoId?.title || 'Trade Expo';
+  await notify(application.exhibitorId, {
     type: 'application_update',
     title: `Exhibition Application ${status.toUpperCase()}`,
-    message: `Your application for "${application.expoId?.title}" has been ${status}. ${
+    message: `Your application for "${expoTitle}" has been ${status}. ${
       adminRemarks ? `Organizer Remarks: "${adminRemarks}"` : ''
     }`,
     link: status === 'approved' ? `/exhibitor/booths?expoId=${application.expoId?._id}` : '/exhibitor/applications',
   });
 
-  // Broadcast live notification via Socket.io if available
-  const io = req.app.get('socketio');
-  if (io) {
-    io.to(`user:${application.exhibitorId}`).emit('notification:new', {
-      title: `Application ${status.toUpperCase()}`,
-      message: `Your application has been ${status}.`,
-    });
+  // Dispatch email notification
+  const exhibitorUser = await User.findById(application.exhibitorId).select('name email');
+  if (exhibitorUser && exhibitorUser.email) {
+    sendApplicationStatusEmail(
+      exhibitorUser.email,
+      exhibitorUser.name,
+      expoTitle,
+      status,
+      adminRemarks
+    ).catch(() => {});
   }
 
   return sendFormattedResponse(

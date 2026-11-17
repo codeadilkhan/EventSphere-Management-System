@@ -13,6 +13,8 @@ const applicationRouter = require('./routes/applicationRoutes');
 const sessionRouter = require('./routes/sessionRoutes');
 const registrationRouter = require('./routes/registrationRoutes');
 const messageRouter = require('./routes/messageRoutes');
+const notificationRouter = require('./routes/notificationRoutes');
+const feedbackRouter = require('./routes/feedbackRoutes');
 const globalErrorHandler = require('./middleware/errorHandler');
 const { ApiServiceException } = require('./utils/helpers');
 
@@ -52,6 +54,8 @@ app.use('/api/applications', applicationRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/api/registrations', registrationRouter);
 app.use('/api/messages', messageRouter);
+app.use('/api/notifications', notificationRouter);
+app.use('/api/feedback', feedbackRouter);
 
 // Undefined routes catcher
 app.all('*', (req, res, next) => {

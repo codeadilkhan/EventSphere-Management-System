@@ -18,7 +18,11 @@ const io = new Server(server, {
 
 // Initialize socket manager with JWT authentication and room handlers
 const { initializeSocketManager } = require('./sockets/socketManager');
+const { setSocketIoInstance } = require('./services/notificationService');
+const { startReminderCron } = require('./services/reminderCron');
+
 const socketManager = initializeSocketManager(io);
+setSocketIoInstance(io);
 
 // Attach socket io and socketManager to express app instance for access in controllers
 app.set('socketio', io);
@@ -27,6 +31,9 @@ app.set('socketManager', socketManager);
 // Boot server and connect database
 const startServer = async () => {
   await connectDatabase();
+
+  // Start background reminder scheduler
+  startReminderCron();
 
   server.listen(PORT, () => {
     console.log(`===============================================`);

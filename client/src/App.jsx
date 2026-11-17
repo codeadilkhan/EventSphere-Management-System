@@ -33,6 +33,8 @@ import { MySchedule } from './pages/attendee/MySchedule';
 import { EventSchedule } from './pages/events/EventSchedule';
 import { ExhibitorDirectory } from './pages/events/ExhibitorDirectory';
 import { ChatPage } from './pages/messages/ChatPage';
+import { NotificationsPage } from './pages/notifications/NotificationsPage';
+import { AdminFeedback } from './pages/admin/AdminFeedback';
 import { NotFound } from './pages/NotFound';
 
 function App() {
@@ -53,6 +55,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ChatPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/notifications"
+                element={
+                  <ProtectedRoute>
+                    <NotificationsPage />
                   </ProtectedRoute>
                 }
               />
@@ -80,8 +90,9 @@ function App() {
               <Route path="applications" element={<AdminApplications />} />
               <Route path="schedule" element={<AdminSchedule />} />
               <Route path="messages" element={<ChatPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="feedback" element={<AdminFeedback />} />
               <Route path="analytics" element={<AdminDashboard />} />
-              <Route path="feedback" element={<AdminDashboard />} />
             </Route>
 
             {/* Exhibitor Protected Dashboard Routes */}
@@ -100,6 +111,7 @@ function App() {
               <Route path="booths" element={<ExhibitorBooths />} />
               <Route path="profile" element={<ExhibitorProfile />} />
               <Route path="messages" element={<ChatPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
             </Route>
 
             {/* Attendee / General Protected Portal Routes */}
@@ -119,6 +131,7 @@ function App() {
               <Route path="my-schedule" element={<MySchedule />} />
               <Route path="exhibitors" element={<ExhibitorDirectory />} />
               <Route path="messages" element={<ChatPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
             </Route>
           </Routes>
         </SocketProvider>

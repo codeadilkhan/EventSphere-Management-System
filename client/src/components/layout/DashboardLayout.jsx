@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useSocket } from '../../context/SocketContext';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { FeedbackModal } from '../feedback/FeedbackModal';
 import {
   LayoutDashboard,
   Calendar,
@@ -19,7 +21,8 @@ import {
   Shield,
   Briefcase,
   Users,
-  Compass
+  Compass,
+  HelpCircle
 } from 'lucide-react';
 
 export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
@@ -28,6 +31,7 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -185,11 +189,22 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
             <h1 className="text-base sm:text-lg font-bold text-slate-900">{roleTitle}</h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Session Active
+              Live Gateway Active
             </div>
+
+            <NotificationBell />
+
+            <button
+              type="button"
+              onClick={() => setFeedbackOpen(true)}
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              title="Support & Feedback"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
           </div>
         </header>
 
@@ -198,6 +213,9 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
           <Outlet />
         </main>
       </div>
+
+      {/* Support & Feedback Drawer Modal */}
+      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </div>
   );
 };
