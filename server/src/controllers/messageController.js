@@ -26,6 +26,29 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     return next(new ApiServiceException('Recipient user not found.', 404));
   }
 
+  // T06.11 Messaging Permissions:
+  // - Admin can message anyone, and anyone can message Admin
+  // - Attendee <-> Exhibitor
+  // - Exhibitor <-> Exhibitor
+  // - Attendee <-> Attendee is restricted to maintain focused commercial inquiries
+  const senderRole = req.user.role;
+  const receiverRole = receiver.role;
+  const isPermitted =
+    senderRole === 'admin' ||
+    receiverRole === 'admin' ||
+    (senderRole === 'attendee' && receiverRole === 'exhibitor') ||
+    (senderRole === 'exhibitor' && receiverRole === 'attendee') ||
+    (senderRole === 'exhibitor' && receiverRole === 'exhibitor');
+
+  if (!isPermitted) {
+    return next(
+      new ApiServiceException(
+        'Direct messaging is reserved for inquiries between Attendees and Exhibitors, peer Exhibitors, or Event Organizers.',
+        403
+      )
+    );
+  }
+
   const message = await Message.create({
     senderId,
     receiverId,

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { expoService } from '../../services/expoService';
 import { boothService } from '../../services/boothService';
 import { applicationService } from '../../services/applicationService';
+import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../context/SocketContext';
 import { FloorPlan } from '../../components/floorplan/FloorPlan';
 import {
   Layers,
@@ -14,10 +16,17 @@ import {
   DollarSign,
   Loader2,
   X,
-  Sparkles
+  Sparkles,
+  MessageSquare,
+  Users,
+  Building,
+  Mail,
+  MapPin
 } from 'lucide-react';
 
 export const ExhibitorBooths = () => {
+  const { user } = useAuth();
+  const { socket, joinExpo, leaveExpo, isUserOnline } = useSocket();
   const [searchParams] = useSearchParams();
   const urlExpoId = searchParams.get('expoId');
 
@@ -76,8 +85,73 @@ export const ExhibitorBooths = () => {
     if (selectedExpoId) {
       loadBooths(selectedExpoId);
       setBookingMessage(null);
+      joinExpo(selectedExpoId);
     }
-  }, [selectedExpoId]);
+    return () => {
+      if (selectedExpoId) leaveExpo(selectedExpoId);
+    };
+  }, [selectedExpoId, joinExpo, leaveExpo]);
+
+  // Live Socket.io booth update listener
+  useEffect(() => {
+    if (!socket) return;
+    const handleBoothUpdated = ({ booth }) => {
+      setBooths((prev) =>
+        prev.map((b) => (b._id === booth._id ? { ...b, ...booth } : b))
+      );
+    };
+    socket.on('booth:updated', handleBoothUpdated);
+    return () => {
+      socket.off('booth:updated', handleBoothUpdated);
+    };
+  }, [socket]);
+
+  // My Allocated Booth in this expo
+  const myBooths = useMemo(() => {
+    return booths.filter(
+      (b) =>
+        b.exhibitorId?._id === user?._id ||
+        b.exhibitorId === user?._id ||
+        (user?.id && (b.exhibitorId?._id === user.id || b.exhibitorId === user.id))
+    );
+  }, [booths, user]);
+
+  // Neighbor Exhibitors (adjacent stalls or same row)
+  const neighborExhibitors = useMemo(() => {
+    if (myBooths.length === 0) return [];
+
+    const myRows = new Set(myBooths.map((b) => b.position?.row));
+    const myCols = new Set(myBooths.map((b) => b.position?.col));
+
+    const neighborsMap = new Map();
+
+    booths.forEach((b) => {
+      if (b.status === 'allocated' && b.exhibitorId) {
+        const exhibitorId = b.exhibitorId?._id || b.exhibitorId;
+        const isMe = exhibitorId === user?._id || exhibitorId === user?.id;
+        if (!isMe) {
+          const rowDiff = Math.min(...Array.from(myRows).map((r) => Math.abs(r - (b.position?.row || 1))));
+          const colDiff = Math.min(...Array.from(myCols).map((c) => Math.abs(c - (b.position?.col || 1))));
+
+          // Considered neighbor if within adjacent row/col
+          if (rowDiff <= 1 && colDiff <= 2) {
+            let relation = 'Adjacent Hall Stall';
+            if (rowDiff === 0 && colDiff === 1) relation = 'Immediate Neighbor (Next Door)';
+            else if (rowDiff === 0) relation = 'Same Row Partner';
+            else if (colDiff === 0) relation = 'Facing Stall';
+
+            neighborsMap.set(exhibitorId.toString(), {
+              booth: b,
+              exhibitor: b.exhibitorId,
+              relation,
+            });
+          }
+        }
+      }
+    });
+
+    return Array.from(neighborsMap.values());
+  }, [booths, myBooths, user]);
 
   // Determine application status for the selected Expo
   const currentExpoApplication = myApplications.find(
@@ -238,6 +312,84 @@ export const ExhibitorBooths = () => {
           isAdmin={false}
           onSelectBooth={handleSelectBooth}
         />
+      )}
+
+      {/* Neighbor Exhibitors & Networking Section (T06.13) */}
+      {myBooths.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-soft space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-600" />
+                <h3 className="text-lg font-extrabold text-slate-900">
+                  Neighboring Exhibitors & Peer Networking
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Collaborate with fellow enterprises allocated to stalls directly adjacent to your booth ({myBooths.map((b) => b.boothNumber).join(', ')}).
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+              {neighborExhibitors.length} Nearby Peers
+            </span>
+          </div>
+
+          {neighborExhibitors.length === 0 ? (
+            <p className="text-xs text-slate-400 py-4 text-center">
+              No neighbors have been allocated to stalls immediately adjacent to yours yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {neighborExhibitors.map(({ booth, exhibitor, relation }) => {
+                const isOnline = isUserOnline(exhibitor._id || exhibitor);
+                return (
+                  <div
+                    key={booth._id}
+                    className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between space-y-4 hover:border-purple-300 transition-all group"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-purple-100 text-purple-800">
+                          Booth {booth.boothNumber}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400">
+                          {relation}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-extrabold text-slate-900 group-hover:text-purple-600 transition-colors">
+                          {exhibitor.name}
+                        </h4>
+                        <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                          <Mail className="w-3.5 h-3.5 text-slate-400" />
+                          {exhibitor.email}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-500 font-medium">
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            isOnline ? 'bg-emerald-500' : 'bg-slate-300'
+                          }`}
+                        />
+                        {isOnline ? 'Online now' : 'Offline'}
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/exhibitor/messages?userId=${exhibitor._id || exhibitor}`}
+                      className="w-full py-2 px-3 bg-white hover:bg-purple-600 text-slate-700 hover:text-white font-bold rounded-xl text-xs transition-colors border border-slate-200 hover:border-purple-600 flex items-center justify-center gap-1.5 shadow-2xs"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      Chat with Neighbor
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Reservation Confirmation Modal */}

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { expoService } from '../../services/expoService';
 import { registrationService } from '../../services/registrationService';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../context/SocketContext';
 import { FloorPlan } from '../../components/floorplan/FloorPlan';
 import {
   Calendar,
@@ -22,6 +23,7 @@ import {
 export const ExpoDetail = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
+  const { socket, joinExpo, leaveExpo } = useSocket();
   const [expo, setExpo] = useState(null);
   const [booths, setBooths] = useState([]);
   const [stats, setStats] = useState(null);
@@ -29,6 +31,40 @@ export const ExpoDetail = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [activeTab, setActiveTab] = useState('floorplan'); // 'floorplan' | 'about' | 'exhibitors'
+
+  useEffect(() => {
+    if (id) {
+      joinExpo(id);
+    }
+    return () => {
+      if (id) leaveExpo(id);
+    };
+  }, [id, joinExpo, leaveExpo]);
+
+  // Live Socket updates for floor plan and expo changes
+  useEffect(() => {
+    if (!socket || !id) return;
+
+    const handleBoothUpdated = ({ booth }) => {
+      setBooths((prev) =>
+        prev.map((b) => (b._id === booth._id ? { ...b, ...booth } : b))
+      );
+    };
+
+    const handleExpoUpdated = ({ expo: updatedExpo }) => {
+      if (updatedExpo._id === id) {
+        setExpo((prev) => ({ ...prev, ...updatedExpo }));
+      }
+    };
+
+    socket.on('booth:updated', handleBoothUpdated);
+    socket.on('expo:updated', handleExpoUpdated);
+
+    return () => {
+      socket.off('booth:updated', handleBoothUpdated);
+      socket.off('expo:updated', handleExpoUpdated);
+    };
+  }, [socket, id]);
 
   useEffect(() => {
     const fetchExpoDetails = async () => {

@@ -5,23 +5,23 @@
 
 ## Subtasks
 ### Socket infrastructure
-- [ ] **T06.1** Integrate Socket.io into `server.js`; authenticate sockets with the JWT
-- [ ] **T06.2** Rooms: `user:<id>`, `expo:<id>`; join on connect/page entry
-- [ ] **T06.3** Client `SocketContext` (connect on login, disconnect on logout)
+- [x] **T06.1** Integrate Socket.io into `server.js`; authenticate sockets with the JWT
+- [x] **T06.2** Rooms: `user:<id>`, `expo:<id>`; join on connect/page entry
+- [x] **T06.3** Client `SocketContext` (connect on login, disconnect on logout)
 
 ### Real-time updates
-- [ ] **T06.4** Emit `booth:updated` when booth status changes → floor plans update live
-- [ ] **T06.5** Emit `schedule:updated` when sessions change → schedule pages refresh
-- [ ] **T06.6** Emit `expo:updated` for expo detail changes
-- [ ] **T06.7** Show a small toast "Schedule updated" on affected pages
+- [x] **T06.4** Emit `booth:updated` when booth status changes → floor plans update live
+- [x] **T06.5** Emit `schedule:updated` when sessions change → schedule pages refresh
+- [x] **T06.6** Emit `expo:updated` for expo detail changes
+- [x] **T06.7** Show a small toast "Schedule updated" on affected pages
 
 ### Messaging
-- [ ] **T06.8** `Message` model: `senderId, receiverId, expoId, content, readAt, createdAt` + index on participants
-- [ ] **T06.9** REST: `GET /api/messages/conversations`, `GET /api/messages/:userId`, `POST /api/messages`
-- [ ] **T06.10** Socket event `message:new` delivers instantly; unread counter
-- [ ] **T06.11** Rules: attendee ↔ exhibitor, exhibitor ↔ admin, exhibitor ↔ neighbor exhibitors in same expo
-- [ ] **T06.12** Chat UI: conversation list + chat window + "Message exhibitor" button on exhibitor profile
-- [ ] **T06.13** Neighbor exhibitors list on "My booth" page with contact info/chat
+- [x] **T06.8** `Message` model: `senderId, receiverId, expoId, content, readAt, createdAt` + index on participants
+- [x] **T06.9** REST: `GET /api/messages/conversations`, `GET /api/messages/:userId`, `POST /api/messages`
+- [x] **T06.10** Socket event `message:new` delivers instantly; unread counter
+- [x] **T06.11** Rules: attendee ↔ exhibitor, exhibitor ↔ admin, exhibitor ↔ neighbor exhibitors in same expo
+- [x] **T06.12** Chat UI: conversation list + chat window + "Message exhibitor" button on exhibitor profile
+- [x] **T06.13** Neighbor exhibitors list on "My booth" page with contact info/chat
 
 ## Acceptance criteria
 - Two browsers open: changing a booth/session in one updates the other without refresh

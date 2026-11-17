@@ -13,7 +13,8 @@ import {
   Package,
   Loader2,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 
 export const ExhibitorDirectory = () => {
@@ -169,15 +170,22 @@ export const ExhibitorDirectory = () => {
                 )}
               </div>
 
-              {/* Action */}
-              <div className="pt-3 border-t border-slate-100">
+              {/* Actions */}
+              <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                <Link
+                  to={`/messages?userId=${ex.userId?._id || ex.userId}`}
+                  className="flex-1 py-2.5 px-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Message Exhibitor
+                </Link>
                 <Link
                   to="/events"
-                  className="w-full py-2.5 px-4 bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-700 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 border border-slate-200"
+                  className="py-2.5 px-3.5 bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-700 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-slate-200"
+                  title="Locate Stall on Floor Plan"
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  Locate Booth on Floor Plan
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  Stall
                 </Link>
               </div>
             </div>

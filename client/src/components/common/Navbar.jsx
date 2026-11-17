@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../context/SocketContext';
 import {
   Sparkles,
   LayoutDashboard,
@@ -14,11 +15,13 @@ import {
   ChevronDown,
   Shield,
   Briefcase,
-  Users
+  Users,
+  MessageSquare
 } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { unreadCount, isConnected } = useSocket();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -99,19 +102,44 @@ export const Navbar = () => {
             </Link>
 
             {isAuthenticated && (
-              <Link
-                to={getDashboardLink()}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname.startsWith('/admin') ||
-                  location.pathname.startsWith('/exhibitor') ||
-                  location.pathname.startsWith('/attendee')
-                    ? 'text-brand-600 bg-brand-50'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4 text-brand-500" />
-                Portal
-              </Link>
+              <>
+                <Link
+                  to="/messages"
+                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    location.pathname.startsWith('/messages')
+                      ? 'text-brand-600 bg-brand-50'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4 text-brand-500" />
+                  Messages
+                  {unreadCount > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-rose-600 text-white animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      isConnected ? 'bg-emerald-500' : 'bg-amber-400'
+                    }`}
+                    title={isConnected ? 'Live Socket Connected' : 'Connecting'}
+                  />
+                </Link>
+
+                <Link
+                  to={getDashboardLink()}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    location.pathname.startsWith('/admin') ||
+                    location.pathname.startsWith('/exhibitor') ||
+                    location.pathname.startsWith('/events/dashboard')
+                      ? 'text-brand-600 bg-brand-50'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4 text-brand-500" />
+                  Portal
+                </Link>
+              </>
             )}
           </div>
 

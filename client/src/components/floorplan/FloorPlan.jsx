@@ -13,7 +13,8 @@ import {
   X,
   Sparkles,
   ShieldAlert,
-  ArrowRight
+  ArrowRight,
+  MessageSquare
 } from 'lucide-react';
 
 export const FloorPlan = ({
@@ -381,6 +382,15 @@ export const FloorPlan = ({
                   <p className="text-[11px] text-slate-500 pt-1 border-t border-indigo-100 italic">
                     Note: "{activeBooth.notes}"
                   </p>
+                )}
+                {!isAdmin && (
+                  <a
+                    href={`/messages?userId=${activeBooth.exhibitorId._id || activeBooth.exhibitorId}`}
+                    className="w-full py-2 px-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-brand-600/20 flex items-center justify-center gap-1.5 mt-2"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    Message Exhibitor
+                  </a>
                 )}
               </div>
             ) : null}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../context/SocketContext';
 import {
   LayoutDashboard,
   Calendar,
@@ -23,6 +24,7 @@ import {
 
 export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
   const { user, logout } = useAuth();
+  const { unreadCount, isConnected } = useSocket();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -41,8 +43,9 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
         { label: 'Floor Plans & Booths', path: '/admin/booths', icon: Layers },
         { label: 'Exhibitor Applications', path: '/admin/applications', icon: Store },
         { label: 'Event Schedule', path: '/admin/schedule', icon: Calendar },
+        { label: 'Live Messages', path: '/admin/messages', icon: MessageSquare },
         { label: 'Analytics & Reports', path: '/admin/analytics', icon: BarChart3 },
-        { label: 'Feedback & Support', path: '/admin/feedback', icon: MessageSquare },
+        { label: 'Feedback & Support', path: '/admin/feedback', icon: Bell },
       ];
     } else if (user?.role === 'exhibitor') {
       return [
@@ -54,7 +57,7 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
       ];
     } else {
       return [
-        { label: 'My Dashboard', path: '/events', icon: LayoutDashboard },
+        { label: 'My Dashboard', path: '/events/dashboard', icon: LayoutDashboard },
         { label: 'Browse Expos', path: '/events/browse', icon: Compass },
         { label: 'Exhibitor Directory', path: '/events/exhibitors', icon: Store },
         { label: 'My Registered Sessions', path: '/events/my-schedule', icon: Calendar },
@@ -125,7 +128,14 @@ export const DashboardLayout = ({ roleTitle = 'Dashboard' }) => {
                   <Icon className={`w-4 h-4 ${isActive ? 'text-brand-600' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                 </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-brand-600" />}
+                <div className="flex items-center gap-1.5">
+                  {Icon === MessageSquare && unreadCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                  {isActive && <ChevronRight className="w-4 h-4 text-brand-600" />}
+                </div>
               </Link>
             );
           })}

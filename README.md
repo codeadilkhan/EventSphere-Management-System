@@ -10,7 +10,7 @@ Status: ⬜ Not started · 🟨 In progress · ✅ Done
 | 03 | task-03-expo-booth.md | Expo & booth management | ✅ | Completed & Verified |
 | 04 | task-04-exhibitor.md | Exhibitor module | ✅ | Completed & Verified |
 | 05 | task-05-schedule-attendee.md | Schedule & attendee module | ✅ | Completed & Verified |
-| 06 | task-06-realtime-messaging.md | Real-time & messaging | 🟨 | In progress |
+| 06 | task-06-realtime-messaging.md | Real-time & messaging | ✅ | Completed & Verified |
 | 07 | task-07-notifications-feedback.md | Notifications & feedback | ⬜ | |
 | 08 | task-08-analytics.md | Analytics & reporting | ⬜ | |
 | 09 | task-09-nfr-security.md | Non-functional hardening | ⬜ | |

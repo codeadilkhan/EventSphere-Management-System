@@ -4,6 +4,7 @@ import { expoService } from '../../services/expoService';
 import { sessionService } from '../../services/sessionService';
 import { registrationService } from '../../services/registrationService';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../context/SocketContext';
 import {
   Calendar,
   Clock,
@@ -24,6 +25,7 @@ export const EventSchedule = () => {
   const [searchParams] = useSearchParams();
   const urlExpoId = searchParams.get('expoId');
   const { isAuthenticated } = useAuth();
+  const { socket, joinExpo, leaveExpo } = useSocket();
 
   const [expos, setExpos] = useState([]);
   const [selectedExpoId, setSelectedExpoId] = useState('');
@@ -87,8 +89,24 @@ export const EventSchedule = () => {
   useEffect(() => {
     if (selectedExpoId) {
       fetchSessions(selectedExpoId);
+      joinExpo(selectedExpoId);
     }
-  }, [selectedExpoId, selectedTopic, selectedHall]);
+    return () => {
+      if (selectedExpoId) leaveExpo(selectedExpoId);
+    };
+  }, [selectedExpoId, selectedTopic, selectedHall, joinExpo, leaveExpo]);
+
+  // Live schedule reload on socket event
+  useEffect(() => {
+    if (!socket || !selectedExpoId) return;
+    const handleScheduleUpdated = () => {
+      fetchSessions(selectedExpoId);
+    };
+    socket.on('schedule:updated', handleScheduleUpdated);
+    return () => {
+      socket.off('schedule:updated', handleScheduleUpdated);
+    };
+  }, [socket, selectedExpoId]);
 
   // Handle Register for Session
   const handleRegister = async (sessionId) => {
