@@ -55,6 +55,14 @@ boothRouter.put(
   boothController.releaseBooth
 );
 
+// Exhibitor & Admin manage booth details (products showcased & staff)
+boothRouter.put(
+  '/:id/details',
+  protect,
+  authorize('exhibitor', 'admin'),
+  boothController.updateBoothDetails
+);
+
 // Exhibitor atomic self-reservation
 boothRouter.put(
   '/:id/reserve',

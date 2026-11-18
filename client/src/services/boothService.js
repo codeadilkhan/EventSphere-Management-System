@@ -40,4 +40,9 @@ export const boothService = {
     const res = await api.put(`/booths/${id}/reserve`);
     return res.data;
   },
+
+  updateBoothDetails: async (id, details) => {
+    const res = await api.put(`/booths/${id}/details`, details);
+    return res.data;
+  },
 };

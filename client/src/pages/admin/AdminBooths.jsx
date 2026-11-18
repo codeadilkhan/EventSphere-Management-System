@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { expoService } from '../../services/expoService';
 import { boothService } from '../../services/boothService';
+import { applicationService } from '../../services/applicationService';
 import { FloorPlan } from '../../components/floorplan/FloorPlan';
 import {
   Layers,
@@ -55,13 +56,41 @@ export const AdminBooths = () => {
     notes: '',
   });
 
-  // Sample approved exhibitors list for admin allocation
+  // Approved exhibitors list for admin allocation
   const sampleExhibitors = [
     { _id: '673a00000000000000000002', name: 'TechNova Solutions', email: 'exhibitor1@eventsphere.com' },
     { _id: '673a00000000000000000003', name: 'Apex Robotics Inc.', email: 'exhibitor2@eventsphere.com' },
     { _id: '673a00000000000000000004', name: 'Quantum Cloud Systems', email: 'quantum@example.com' },
     { _id: '673a00000000000000000005', name: 'BioTech Automation Labs', email: 'biotech@example.com' },
   ];
+  const [exhibitors, setExhibitors] = useState(sampleExhibitors);
+
+  // Dynamically load approved exhibitors for the selected expo
+  useEffect(() => {
+    const fetchApprovedExhibitors = async () => {
+      try {
+        const res = await applicationService.getApplications({
+          expoId: selectedExpoId || undefined,
+          status: 'approved',
+        });
+        const apps = res.data?.applications || [];
+        const dynamicList = apps
+          .map((app) => ({
+            _id: app.userId?._id || app.userId,
+            name: app.companyName || app.userId?.name || 'Approved Exhibitor',
+            email: app.userId?.email || '',
+          }))
+          .filter((ex, idx, self) => self.findIndex((s) => s._id === ex._id) === idx);
+
+        setExhibitors(dynamicList.length > 0 ? dynamicList : sampleExhibitors);
+      } catch (err) {
+        setExhibitors(sampleExhibitors);
+      }
+    };
+    if (selectedExpoId) {
+      fetchApprovedExhibitors();
+    }
+  }, [selectedExpoId]);
 
   // Fetch all expos for selector
   useEffect(() => {
@@ -287,7 +316,7 @@ export const AdminBooths = () => {
           isAdmin={true}
           onAllocate={handleAllocate}
           onRelease={handleRelease}
-          exhibitorList={sampleExhibitors}
+          exhibitorList={exhibitors}
         />
       ) : (
         /* Table View */

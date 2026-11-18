@@ -353,6 +353,50 @@ const getBoothById = asyncHandler(async (req, res, next) => {
   return sendFormattedResponse(res, 200, true, { booth }, 'Booth details retrieved.');
 });
 
+// Update Exhibitor Booth Details (Showcased Products & Staff Information)
+const updateBoothDetails = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { productsShowcased, staff, notes } = req.body;
+
+  const booth = await Booth.findById(id);
+  if (!booth) {
+    return next(new ApiServiceException('Booth not found.', 404));
+  }
+
+  // Authorization: must be admin OR the assigned exhibitor
+  if (req.user.role !== 'admin' && String(booth.exhibitorId) !== String(req.user.id)) {
+    return next(
+      new ApiServiceException('You do not have permission to manage details for this booth.', 403)
+    );
+  }
+
+  if (Array.isArray(productsShowcased)) {
+    booth.productsShowcased = productsShowcased.map((p) => String(p).trim()).filter(Boolean);
+  }
+  if (Array.isArray(staff)) {
+    booth.staff = staff;
+  }
+  if (notes !== undefined) {
+    booth.notes = notes;
+  }
+
+  await booth.save();
+
+  const updatedBooth = await Booth.findById(id)
+    .populate('exhibitorId', 'name email phone')
+    .populate('expoId', 'title venue city');
+
+  emitBoothLiveUpdate(req, updatedBooth.expoId?._id || updatedBooth.expoId, updatedBooth, 'updated');
+
+  return sendFormattedResponse(
+    res,
+    200,
+    true,
+    { booth: updatedBooth },
+    'Booth showcase and staff details updated successfully.'
+  );
+});
+
 module.exports = {
   getBoothsByExpo,
   getBoothById,
@@ -363,4 +407,5 @@ module.exports = {
   allocateBooth,
   releaseBooth,
   reserveBoothByExhibitor,
+  updateBoothDetails,
 };

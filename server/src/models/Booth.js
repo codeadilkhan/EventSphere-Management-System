@@ -67,6 +67,20 @@ const boothSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    productsShowcased: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    staff: [
+      {
+        name: { type: String, trim: true, default: '' },
+        role: { type: String, trim: true, default: 'Booth Representative' },
+        email: { type: String, trim: true, default: '' },
+        phone: { type: String, trim: true, default: '' },
+      },
+    ],
   },
   {
     timestamps: true,

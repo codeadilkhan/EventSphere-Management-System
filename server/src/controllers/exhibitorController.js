@@ -115,11 +115,56 @@ const searchExhibitors = asyncHandler(async (req, res) => {
     .populate('userId', 'name email')
     .sort({ companyName: 1 });
 
+  // Attach allocated booths to each exhibitor for floor plan location
+  const userIds = exhibitors.map((e) => e.userId?._id).filter(Boolean);
+  let allocatedBooths = [];
+  try {
+    const boothQuery = Booth.find({
+      exhibitorId: { $in: userIds },
+      status: 'allocated',
+    });
+    if (boothQuery && typeof boothQuery.populate === 'function') {
+      allocatedBooths = (await boothQuery.populate('expoId', 'title venue city')) || [];
+    } else if (Array.isArray(boothQuery)) {
+      allocatedBooths = boothQuery;
+    }
+  } catch (err) {
+    allocatedBooths = [];
+  }
+
+  const boothMap = new Map();
+  for (const b of allocatedBooths) {
+    const key = String(b.exhibitorId);
+    if (!boothMap.has(key)) boothMap.set(key, []);
+    boothMap.get(key).push({
+      _id: b._id,
+      boothNumber: b.boothNumber,
+      category: b.category,
+      size: b.size,
+      expoId: b.expoId,
+    });
+  }
+
+  const enrichedExhibitors = exhibitors.map((ex) => {
+    if (typeof ex.toObject === 'function') {
+      const exObj = ex.toObject();
+      exObj.allocatedBooths = boothMap.get(String(ex.userId?._id || ex.userId)) || [];
+      return exObj;
+    }
+    if (boothMap.size === 0) {
+      return ex;
+    }
+    return {
+      ...ex,
+      allocatedBooths: boothMap.get(String(ex.userId?._id || ex.userId)) || [],
+    };
+  });
+
   return sendFormattedResponse(
     res,
     200,
     true,
-    { count: exhibitors.length, exhibitors },
+    { count: enrichedExhibitors.length, exhibitors: enrichedExhibitors },
     'Exhibitors directory loaded.'
   );
 });

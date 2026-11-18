@@ -14,8 +14,8 @@ const registerValidator = Joi.object({
     'string.min': 'Password must be at least 6 characters',
     'any.required': 'Password is required',
   }),
-  role: Joi.string().valid('exhibitor', 'attendee').default('attendee').messages({
-    'any.only': 'Role must be either exhibitor or attendee',
+  role: Joi.string().valid('admin', 'exhibitor', 'attendee').default('attendee').messages({
+    'any.only': 'Role must be admin, exhibitor, or attendee',
   }),
   phone: Joi.string().allow('', null).trim(),
   consentGiven: Joi.boolean().valid(true).required().messages({

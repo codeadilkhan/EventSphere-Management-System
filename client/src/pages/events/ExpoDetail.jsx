@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { expoService } from '../../services/expoService';
 import { registrationService } from '../../services/registrationService';
 import { useAuth } from '../../hooks/useAuth';
@@ -22,6 +22,8 @@ import {
 
 export const ExpoDetail = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const targetBoothNumber = searchParams.get('booth');
   const { user, isAuthenticated } = useAuth();
   const { socket, joinExpo, leaveExpo } = useSocket();
   const [expo, setExpo] = useState(null);
@@ -264,7 +266,15 @@ export const ExpoDetail = () => {
       {/* Tab 1: Floor Plan */}
       {activeTab === 'floorplan' && (
         <div className="space-y-4">
-          <FloorPlan booths={booths} isAdmin={false} />
+          <FloorPlan
+            booths={booths}
+            isAdmin={false}
+            selectedBoothId={
+              targetBoothNumber
+                ? booths.find((b) => b.boothNumber === targetBoothNumber)?._id
+                : null
+            }
+          />
         </div>
       )}
 

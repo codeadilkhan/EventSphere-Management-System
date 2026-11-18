@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Briefcase,
   Users,
+  ShieldCheck,
   Loader2,
   CheckCircle
 } from 'lucide-react';
@@ -76,7 +77,9 @@ export const Register = () => {
         login(user, token);
 
         // Redirect based on selected role
-        if (user.role === 'exhibitor') {
+        if (user.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else if (user.role === 'exhibitor') {
           navigate('/exhibitor', { replace: true });
         } else {
           navigate('/events', { replace: true });
@@ -122,18 +125,18 @@ export const Register = () => {
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
                 Account Type
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
                   type="button"
                   onClick={() => handleRoleSelect('attendee')}
-                  className={`p-3.5 rounded-2xl border text-left transition-all flex items-start gap-3 ${
+                  className={`p-3 rounded-2xl border text-left transition-all flex items-start gap-2.5 ${
                     formData.role === 'attendee'
                       ? 'border-brand-500 bg-brand-50/50 ring-2 ring-brand-500/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
                   <div
-                    className={`p-2 rounded-xl ${
+                    className={`p-2 rounded-xl shrink-0 ${
                       formData.role === 'attendee'
                         ? 'bg-brand-600 text-white'
                         : 'bg-slate-100 text-slate-500'
@@ -142,9 +145,9 @@ export const Register = () => {
                     <Users className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-800">Attendee / Visitor</p>
-                    <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
-                      Explore expos & register for sessions
+                    <p className="text-xs font-bold text-slate-800">Attendee</p>
+                    <p className="text-[10px] text-slate-500 leading-tight mt-0.5">
+                      Explore expos & book sessions
                     </p>
                   </div>
                 </button>
@@ -152,14 +155,14 @@ export const Register = () => {
                 <button
                   type="button"
                   onClick={() => handleRoleSelect('exhibitor')}
-                  className={`p-3.5 rounded-2xl border text-left transition-all flex items-start gap-3 ${
+                  className={`p-3 rounded-2xl border text-left transition-all flex items-start gap-2.5 ${
                     formData.role === 'exhibitor'
                       ? 'border-purple-500 bg-purple-50/50 ring-2 ring-purple-500/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
                   <div
-                    className={`p-2 rounded-xl ${
+                    className={`p-2 rounded-xl shrink-0 ${
                       formData.role === 'exhibitor'
                         ? 'bg-purple-600 text-white'
                         : 'bg-slate-100 text-slate-500'
@@ -168,9 +171,35 @@ export const Register = () => {
                     <Briefcase className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-800">Exhibitor / Partner</p>
-                    <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
-                      Showcase brand & book expo booths
+                    <p className="text-xs font-bold text-slate-800">Exhibitor</p>
+                    <p className="text-[10px] text-slate-500 leading-tight mt-0.5">
+                      Showcase brand & reserve stalls
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleRoleSelect('admin')}
+                  className={`p-3 rounded-2xl border text-left transition-all flex items-start gap-2.5 ${
+                    formData.role === 'admin'
+                      ? 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div
+                    className={`p-2 rounded-xl shrink-0 ${
+                      formData.role === 'admin'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Organizer</p>
+                    <p className="text-[10px] text-slate-500 leading-tight mt-0.5">
+                      Manage expos, booths & analytics
                     </p>
                   </div>
                 </button>
