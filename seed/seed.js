@@ -1,4 +1,6 @@
-require('dotenv').config({ path: '../server/.env' });
+const path = require('path');
+module.paths.push(path.resolve(__dirname, '../server/node_modules'));
+require('dotenv').config({ path: path.resolve(__dirname, '../server/.env') });
 const mongoose = require('mongoose');
 const User = require('../server/src/models/User');
 const Expo = require('../server/src/models/Expo');
@@ -179,18 +181,30 @@ const runDatabaseSeed = async () => {
         let status = 'available';
         let assignedExhibitorId = null;
         let allocatedAt = null;
+        let productsShowcased = [];
+        let staff = [];
 
         // Allocate A-01 to exhibitor1
         if (boothNumber === 'A-01') {
           status = 'allocated';
           assignedExhibitorId = exhibitor1._id;
           allocatedAt = new Date();
+          productsShowcased = ['NovaCore AI Engine', 'NeuralVision Vision AI', 'QuantumEdge Cloud Gateway'];
+          staff = [
+            { name: 'Dr. Sarah Mitchell', role: 'Chief AI Architect', email: 's.mitchell@technova.io', phone: '+1 555-0192' },
+            { name: 'Alex Rivera', role: 'Senior Solutions Engineer', email: 'a.rivera@technova.io', phone: '+1 555-0194' },
+          ];
         }
         // Allocate B-04 to exhibitor2
         if (boothNumber === 'B-04') {
           status = 'allocated';
           assignedExhibitorId = exhibitor2._id;
           allocatedAt = new Date();
+          productsShowcased = ['Cobot-X Collaborative Arm', 'TitanAGV Mobile Warehouse Rover'];
+          staff = [
+            { name: 'Marcus Vance', role: 'Head of Robotics Deployment', email: 'm.vance@apexrobotics.com', phone: '+1 555-0381' },
+            { name: 'Elena Rostova', role: 'Field Automation Specialist', email: 'e.rostova@apexrobotics.com', phone: '+1 555-0385' },
+          ];
         }
 
         boothsToSeed.push({
@@ -204,6 +218,8 @@ const runDatabaseSeed = async () => {
           exhibitorId: assignedExhibitorId,
           allocatedAt,
           notes: status === 'allocated' ? 'Priority exhibition stall with dual power socket' : '',
+          productsShowcased,
+          staff,
         });
       }
     }

@@ -73,6 +73,13 @@ EventSphere is an all-in-one trade expo virtualization platform. Access is struc
 4. Click **"Confirm & Secure Booth"**. The stall is atomically locked to your account with zero double-booking risk.
 5. Your neighbor exhibitors in adjacent stalls will display in your portal for commercial networking.
 
+#### Managing Booth Showcase Details & On-site Staff Roster
+1. In **"Floor Plan & Select Booth"** (`/exhibitor/booths`), scroll to your **"My Allocated Stalls & Showcase Details"** section.
+2. Click **"Manage Details"** on your confirmed stall.
+3. Enter your showcased products/services (e.g. *AI Vision Pro, Autonomous Forklift, Cloud Dashboard*).
+4. Register your on-site booth staff representatives (name, role, email, phone) so organizers and attendees can identify your on-duty team.
+5. Add logistics or electrical setup notes and click **"Save Details"** to sync instantly with the live floor plan.
+
 #### Managing Company Profile Showcase
 1. Go to **"Company Profile & Showcase"** (`/exhibitor/profile`).
 2. Upload your high-resolution corporate logo and banner.
@@ -97,10 +104,11 @@ EventSphere is an all-in-one trade expo virtualization platform. Access is struc
   1. A real-time Bell notification in your header with direct room navigation.
   2. A clean HTML email reminder confirming the speaker, topic, and hall location.
 
-#### Direct Networking & Support Inquiries
+#### Direct Networking, Stall Navigation & Support Inquiries
 - Click **"Exhibitor Directory"** (`/events/exhibitors`) to explore participating companies.
-- Click **"Chat with Exhibitor"** to open a direct real-time chat thread.
-- Need organizer assistance? Click the **Help/Question Mark icon** in the top header to submit a support ticket.
+- Each verified exhibitor card displays their **confirmed floor plan stall badge** (e.g. `Stall A-01 (Tech Expo 2026)`). Clicking this badge opens the interactive floor map with the booth focused and highlighted.
+- Click **"Message / Inquire"** to open a direct real-time chat thread with the enterprise team.
+- Need organizer assistance? Click the **Help/Question Mark icon** in the top header or dashboard to submit an instant support ticket.
 
 ---
 

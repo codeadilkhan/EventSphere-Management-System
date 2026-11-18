@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { exhibitorService } from '../../services/exhibitorService';
 import {
   Building,
@@ -183,20 +184,22 @@ export const ExhibitorProfile = () => {
             {allocatedBooths.length === 0 ? (
               <p className="text-xs text-slate-400">
                 You do not have any stalls reserved yet. Head over to{' '}
-                <a href="/exhibitor/booths" className="text-brand-600 font-bold underline">
+                <Link to="/exhibitor/booths" className="text-brand-600 font-bold underline hover:text-brand-700">
                   Floor Plans
-                </a>{' '}
+                </Link>{' '}
                 to select a booth.
               </p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {allocatedBooths.map((b) => (
-                  <div
+                  <Link
                     key={b._id}
-                    className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200 flex items-center justify-between"
+                    to={`/exhibitor/booths?expoId=${b.expoId?._id || b.expoId}`}
+                    className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200 hover:border-purple-300 hover:shadow-xs transition-all flex items-center justify-between group"
+                    title="Manage stall showcase & staff"
                   >
                     <div>
-                      <p className="text-xs font-bold text-indigo-950">
+                      <p className="text-xs font-bold text-indigo-950 group-hover:text-purple-700 transition-colors">
                         {b.expoId?.title || 'Exhibition'}
                       </p>
                       <p className="text-[11px] text-slate-500">
@@ -206,7 +209,7 @@ export const ExhibitorProfile = () => {
                     <span className="px-3 py-1 rounded-xl bg-brand-600 text-white font-extrabold text-xs">
                       Booth {b.boothNumber}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

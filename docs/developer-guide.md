@@ -44,7 +44,7 @@ SMTP_FROM=noreply@eventsphere.com
 
 **Frontend Configuration (`client/.env`):**
 ```ini
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 ```
 

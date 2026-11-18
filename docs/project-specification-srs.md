@@ -261,11 +261,11 @@ graph TD
 
 The system is engineered on **10 MongoDB collections** adhering to third normal form principles where relational integrity is critical, and leveraging document embedding for high-throughput reads:
 
-1. **`users`**: User identities, hashed credentials, roles (`admin`, `exhibitor`, `attendee`), phone, and GDPR consent timestamp.
+1. **`users`**: User identities, hashed credentials, roles (`admin` / organizer, `exhibitor`, `attendee`), phone, and GDPR consent timestamp.
    - *Indexes:* `{ email: 1 }` (unique), `{ role: 1 }`.
 2. **`expos`**: Exhibition records, location venues, start/end dates, themes, and banners.
    - *Indexes:* `{ status: 1, startDate: 1 }`, text index `{ title: 'text', theme: 'text', description: 'text' }`.
-3. **`booths`**: Commercial floor stalls, dimensions, pricing, categories, and allocation status.
+3. **`booths`**: Commercial floor stalls, dimensions, pricing, categories, allocation status, showcased products, and assigned on-site booth staff roster.
    - *Indexes:* `{ expoId: 1, boothNumber: 1 }` (unique compound), `{ expoId: 1, status: 1 }`.
 4. **`exhibitorapplications`**: Corporate participation applications, contact details, uploaded documentation URLs, and organizer review notes.
    - *Indexes:* `{ exhibitorId: 1, expoId: 1 }` (unique compound), `{ expoId: 1, status: 1 }`.
@@ -288,7 +288,7 @@ The system is engineered on **10 MongoDB collections** adhering to third normal 
 
 | Method | Endpoint | Access Level | Description |
 |---|---|---|---|
-| `POST` | `/api/auth/register` | Public | Register new Attendee or Exhibitor with GDPR consent |
+| `POST` | `/api/auth/register` | Public | Register new Attendee, Exhibitor, or Organizer with GDPR consent |
 | `POST` | `/api/auth/login` | Public | Authenticate user credentials and issue signed JWT |
 | `POST` | `/api/auth/forgot-password`| Public | Generate cryptographic reset token and dispatch email |
 | `POST` | `/api/auth/reset-password/:t` | Public | Reset account password using token |
@@ -300,6 +300,9 @@ The system is engineered on **10 MongoDB collections** adhering to third normal 
 | `POST` | `/api/expos` | Admin | Create a new exhibition |
 | `GET` | `/api/booths/expo/:expoId` | Public | Retrieve interactive floor plan stalls for an expo |
 | `POST` | `/api/booths/bulk-generate`| Admin | Bulk generate matrix of floor plan booths |
+| `PUT` | `/api/booths/:id/allocate` | Admin | Allocate stall to approved exhibitor |
+| `PUT` | `/api/booths/:id/release` | Admin | Release stall back to available inventory |
+| `PUT` | `/api/booths/:id/details` | Exhibitor / Admin | Manage booth showcased products and on-site staff roster |
 | `PUT` | `/api/booths/:id/reserve` | Exhibitor | Atomically reserve available booth for approved company |
 | `POST` | `/api/applications` | Exhibitor | Submit commercial application with certificates |
 | `PATCH` | `/api/applications/:id/review`| Admin | Approve or reject exhibitor application |
@@ -308,6 +311,10 @@ The system is engineered on **10 MongoDB collections** adhering to third normal 
 | `POST` | `/api/registrations/session`| Attendee | Reserve seat in keynote session (capacity checked) |
 | `POST` | `/api/messages` | Authenticated | Dispatch direct message (RBAC policy enforced) |
 | `GET` | `/api/notifications` | Authenticated | Paginated in-app notifications with unread count |
+| `GET` | `/api/analytics/overview` | Admin | Real-time KPI cards and aggregate revenue calculations |
+| `GET` | `/api/analytics/export` | Admin | Export audit metrics in downloadable CSV format |
+| `POST` | `/api/feedback` | Authenticated | Submit user feedback suggestion or report issue |
+| `PATCH` | `/api/feedback/:id/reply` | Admin | Reply to support ticket and transition status |
 | `GET` | `/api/analytics/overview` | Admin | Aggregate KPI overview across attendees, stalls, and revenue |
 | `GET` | `/api/analytics/export` | Admin | Download audit report as CSV (overview, booths, sessions) |
 | `GET` | `/api/health` | Public | Service health, DB state, uptime, and memory usage |
