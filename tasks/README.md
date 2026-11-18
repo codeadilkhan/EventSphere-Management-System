@@ -15,7 +15,7 @@ Status: ⬜ Not started · 🟨 In progress · ✅ Done
 | 08 | task-08-analytics.md | Analytics & reporting | ✅ | Completed & Verified |
 | 09 | task-09-nfr-security.md | Non-functional hardening | ✅ | Completed & Verified |
 | 10 | task-10-testing.md | Testing & QA | ✅ | Completed & Verified |
-| 11 | task-11-docs-video.md | Docs, video, submission | ⬜ | |
+| 11 | task-11-docs-video.md | Docs, video, submission | ✅ | Completed & Verified |
 
 ## Task file format
 Each file has: **Goal → Prerequisites → Subtasks (checkboxes) → Acceptance criteria → If stuck → Done**.
