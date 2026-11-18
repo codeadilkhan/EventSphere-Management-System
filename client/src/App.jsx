@@ -36,6 +36,8 @@ import { ChatPage } from './pages/messages/ChatPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { AdminFeedback } from './pages/admin/AdminFeedback';
 import { AdminAnalytics } from './pages/admin/AdminAnalytics';
+import { PrivacyPolicy } from './pages/legal/PrivacyPolicy';
+import { TermsOfService } from './pages/legal/TermsOfService';
 import { NotFound } from './pages/NotFound';
 
 function App() {
@@ -71,6 +73,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
               <Route path="*" element={<NotFound />} />
             </Route>
 

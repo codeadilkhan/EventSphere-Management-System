@@ -162,6 +162,46 @@ const sessionValidator = Joi.object({
   status: Joi.string().valid('scheduled', 'ongoing', 'completed', 'cancelled').default('scheduled'),
 });
 
+const feedbackValidator = Joi.object({
+  type: Joi.string().valid('issue', 'suggestion', 'inquiry').default('inquiry'),
+  subject: Joi.string().trim().min(3).max(150).required().messages({
+    'string.empty': 'Subject cannot be empty',
+    'any.required': 'Subject is required',
+  }),
+  message: Joi.string().trim().min(5).max(3000).required().messages({
+    'string.empty': 'Message cannot be empty',
+    'any.required': 'Detailed message is required',
+  }),
+});
+
+const updateProfileValidator = Joi.object({
+  name: Joi.string().trim().min(2).max(60),
+  phone: Joi.string().trim().allow('', null),
+});
+
+const deleteAccountValidator = Joi.object({
+  password: Joi.string().required().messages({
+    'any.required': 'Password confirmation is required to permanently delete your account',
+  }),
+});
+
+const applicationValidator = Joi.object({
+  expoId: Joi.string().hex().length(24).required().messages({
+    'any.required': 'Target Expo ID is required',
+  }),
+  companyName: Joi.string().trim().min(2).max(100).required().messages({
+    'any.required': 'Company name is required',
+  }),
+  contactEmail: Joi.string().email().trim().lowercase().required().messages({
+    'any.required': 'Contact email is required',
+  }),
+  contactPhone: Joi.string().trim().required().messages({
+    'any.required': 'Contact phone is required',
+  }),
+  proposedProducts: Joi.string().trim().allow('', null).default(''),
+  preferredBoothCategory: Joi.string().valid('Standard', 'Premium', 'Corner', 'Island').default('Standard'),
+});
+
 module.exports = {
   registerValidator,
   loginValidator,
@@ -172,4 +212,8 @@ module.exports = {
   boothValidator,
   bulkBoothValidator,
   sessionValidator,
+  feedbackValidator,
+  updateProfileValidator,
+  deleteAccountValidator,
+  applicationValidator,
 };

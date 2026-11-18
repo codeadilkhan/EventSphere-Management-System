@@ -297,8 +297,14 @@ export const Register = () => {
                 />
                 <span className="text-xs text-slate-600 leading-relaxed">
                   I agree to the EventSphere{' '}
-                  <span className="text-brand-600 font-semibold underline">Terms of Service</span> and{' '}
-                  <span className="text-brand-600 font-semibold underline">Privacy Policy</span>, and consent to account data processing for event communications.
+                  <Link to="/terms" target="_blank" className="text-brand-600 font-semibold underline hover:text-brand-700">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" target="_blank" className="text-brand-600 font-semibold underline hover:text-brand-700">
+                    Privacy Policy
+                  </Link>
+                  , and consent to account data processing for event communications.
                 </span>
               </label>
             </div>

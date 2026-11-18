@@ -25,10 +25,28 @@ const createCustomStorage = (prefix = 'file') => {
   });
 };
 
+// Disallowed executable extensions blacklist for defense-in-depth
+const DISALLOWED_EXTENSIONS = [
+  '.exe', '.bat', '.cmd', '.sh', '.php', '.phtml', '.js', '.py',
+  '.pl', '.cgi', '.html', '.htm', '.svg', '.vbs', '.jar', '.msi',
+  '.scr', '.com', '.wsf', '.dll'
+];
+
+const ALLOWED_IMAGE_MIMES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+const ALLOWED_IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
+
+const ALLOWED_DOC_MIMES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+const ALLOWED_DOC_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
+
 // Image-only filter
 const imageFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  if (allowed.includes(file.mimetype)) {
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (DISALLOWED_EXTENSIONS.includes(ext)) {
+    return cb(new ApiServiceException('Executable or script files are strictly prohibited.', 400), false);
+  }
+
+  if (ALLOWED_IMAGE_MIMES.includes(file.mimetype) && ALLOWED_IMAGE_EXTS.includes(ext)) {
     cb(null, true);
   } else {
     cb(new ApiServiceException('Invalid image type. Only JPEG, PNG, and WebP are allowed.', 400), false);
@@ -37,19 +55,18 @@ const imageFilter = (req, file, cb) => {
 
 // Document & Image filter (allows PDF as well)
 const documentFilter = (req, file, cb) => {
-  const allowed = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'application/pdf',
-  ];
-  if (allowed.includes(file.mimetype)) {
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (DISALLOWED_EXTENSIONS.includes(ext)) {
+    return cb(new ApiServiceException('Executable or script files are strictly prohibited.', 400), false);
+  }
+
+  if (ALLOWED_DOC_MIMES.includes(file.mimetype) && ALLOWED_DOC_EXTS.includes(ext)) {
     cb(null, true);
   } else {
     cb(
       new ApiServiceException(
-        'Invalid document type. Only PDF documents and image files (JPG, PNG) are permitted.',
+        'Invalid document type. Only PDF documents and image files (JPG, PNG, WebP) are permitted.',
         400
       ),
       false

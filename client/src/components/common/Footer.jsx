@@ -42,12 +42,15 @@ export const Footer = () => {
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 <span>JWT Signed Sessions</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <Globe className="w-4 h-4 text-brand-500" />
-                <span>Socket.io Real-time</span>
+              <li>
+                <a href="/privacy" className="hover:text-emerald-600 transition-colors">
+                  Privacy Policy (GDPR)
+                </a>
               </li>
-              <li className="text-xs text-slate-400 pt-2">
-                Designed for high availability & audit conformance.
+              <li>
+                <a href="/terms" className="hover:text-brand-600 transition-colors">
+                  Terms of Service
+                </a>
               </li>
             </ul>
           </div>
