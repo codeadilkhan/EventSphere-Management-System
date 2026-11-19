@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { applicationService } from '../../services/applicationService';
+import { boothService } from '../../services/boothService';
 import {
   Briefcase,
   Store,
@@ -11,133 +13,216 @@ import {
   ArrowRight,
   ExternalLink,
   ShieldCheck,
-  Building
+  Building2,
+  Sparkles,
+  Users,
+  Package,
+  Award,
+  ChevronRight,
+  Plus
 } from 'lucide-react';
 
 export const ExhibitorDashboard = () => {
   const { user } = useAuth();
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        const res = await applicationService.getMyApplications();
+        const list = res.data?.applications || res.data || [];
+        setApplications(Array.isArray(list) ? list : []);
+      } catch (err) {
+        console.warn('Exhibitor apps load error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, []);
+
+  const approvedApps = applications.filter((a) => a.status === 'approved');
+  const pendingApps = applications.filter((a) => a.status === 'pending');
 
   return (
-    <div className="space-y-8">
-      {/* Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white relative overflow-hidden shadow-xl">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-400/20 text-purple-200 text-xs font-bold border border-purple-400/30">
-              <Briefcase className="w-3.5 h-3.5" /> Exhibitor Commercial Hub
+    <div className="space-y-8 pb-10">
+      {/* 1. Exhibitor Hub Banner */}
+      <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-[#101828] via-[#1e1b4b] to-[#101828] text-white relative overflow-hidden shadow-2xl border border-slate-800">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 bottom-0 w-64 h-64 bg-accent-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-extrabold border border-brand-500/30">
+              <Briefcase className="w-3.5 h-3.5 text-accent-400" /> Commercial Exhibitor Suite
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              {user?.name || 'Exhibitor Partner'}
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              {user?.name || 'Exhibitor Commercial Partner'}
             </h2>
-            <p className="text-purple-200 text-xs sm:text-sm max-w-xl">
-              Track your trade show applications, manage booth selection, showcase innovative products, and network with attendees.
+            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+              Manage your commercial presence across global exhibitions. Select interactive floor plan stalls, update showcased product catalogues, assign booth staff, and chat directly with buyers.
             </p>
           </div>
 
-          <Link
-            to="/events"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-purple-900 font-bold rounded-xl text-xs hover:bg-purple-50 transition-all shadow-md"
-          >
-            Browse Available Expos
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Status Highlights */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Application Status */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Application</span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-              <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Approved
-            </span>
-          </div>
-          <div>
-            <h4 className="text-base font-bold text-slate-800">Global Tech & Innovation Expo</h4>
-            <p className="text-xs text-slate-500 mt-1">Application verified by organizer team.</p>
-          </div>
-          <div className="pt-2 text-xs text-slate-400 border-t border-slate-100 flex items-center justify-between">
-            <span>Reviewed 2 days ago</span>
-            <Link to="/exhibitor/applications" className="text-brand-600 font-semibold hover:underline">
-              View details
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/exhibitor/applications"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#4338CA] to-[#FF6B35] hover:from-[#3730A3] hover:to-[#E54E18] text-white font-bold rounded-xl text-xs transition-all shadow-lg shadow-brand-700/25 hover:-translate-y-0.5"
+            >
+              <Plus className="w-4 h-4" />
+              Apply for Stalls
             </Link>
-          </div>
-        </div>
-
-        {/* Booth Allocation */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Allocated Space</span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
-              <Layers className="w-3 h-3 text-brand-500" /> Booth B-04
-            </span>
-          </div>
-          <div>
-            <h4 className="text-base font-bold text-slate-800">Main Exhibition Hall &bull; Row 2</h4>
-            <p className="text-xs text-slate-500 mt-1">10×10 Premium corner stall with dual visitor frontage.</p>
-          </div>
-          <div className="pt-2 text-xs text-slate-400 border-t border-slate-100 flex items-center justify-between">
-            <span>Power & Wifi Allocated</span>
-            <Link to="/exhibitor/booths" className="text-brand-600 font-semibold hover:underline">
-              Floor Plan
-            </Link>
-          </div>
-        </div>
-
-        {/* Networking Leads */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Lead Inquiries</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <MessageSquare className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <h4 className="text-2xl font-extrabold text-slate-900">8 Messages</h4>
-            <p className="text-xs text-slate-500 mt-1">Inquiries from registered trade visitors and neighboring booths.</p>
-          </div>
-          <div className="pt-2 text-xs text-slate-400 border-t border-slate-100 flex items-center justify-between">
-            <span>Live real-time messaging</span>
-            <Link to="/exhibitor/messages" className="text-brand-600 font-semibold hover:underline">
-              Open Chat
+            <Link
+              to="/events"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs transition-all border border-white/20"
+            >
+              Expos Catalog
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Exhibitor Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-            <Building className="w-5 h-5" />
+      {/* 2. Key Status Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Approved Expos Tile */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Approved Stalls</span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Verified
+            </span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Showcase Profile & Product Catalog</h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Upload your company logo, description, product brochures, and assign booth staff representatives so attendees can connect with your team.
-          </p>
-          <Link
-            to="/exhibitor/profile"
-            className="inline-flex items-center gap-2 text-xs font-bold text-purple-600 hover:text-purple-700 pt-2"
-          >
-            Edit Company Showcase <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div>
+            <span className="text-3xl font-black text-[#101828]">{approvedApps.length}</span>
+            <p className="text-xs text-slate-500 mt-1">Confirmed exhibition contracts</p>
+          </div>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <Link to="/exhibitor/booths" className="text-brand-700 font-bold hover:text-accent-500 flex items-center gap-1">
+              Configure Stalls <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
-            <Layers className="w-5 h-5" />
+        {/* Pending Submissions Tile */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Approvals</span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-amber-600" /> Under Review
+            </span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Interactive Booth Selection</h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            View the live expo layout, browse available stalls, check neighbor exhibitors, and reserve your spot with zero conflicts.
-          </p>
+          <div>
+            <span className="text-3xl font-black text-amber-600">{pendingApps.length}</span>
+            <p className="text-xs text-slate-500 mt-1">Awaiting organizer verification</p>
+          </div>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <Link to="/exhibitor/applications" className="text-brand-700 font-bold hover:text-accent-500 flex items-center gap-1">
+              View Applications <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Showcase Readiness */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Showcase Profile</span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-brand-50 text-brand-700 border border-brand-200 flex items-center gap-1">
+              <Award className="w-3.5 h-3.5 text-brand-600" /> Active
+            </span>
+          </div>
+          <div>
+            <span className="text-3xl font-black text-[#4338CA]">100%</span>
+            <p className="text-xs text-slate-500 mt-1">Catalogue and staff configured</p>
+          </div>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <Link to="/exhibitor/profile" className="text-brand-700 font-bold hover:text-accent-500 flex items-center gap-1">
+              Update Profile <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Operational Feature Modules Grid (4 Cards) */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-black text-[#101828]">Commercial Management Modules</h3>
+          <p className="text-xs text-slate-500">Self-service control suites for stall configuration and buyer engagement.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link
             to="/exhibitor/booths"
-            className="inline-flex items-center gap-2 text-xs font-bold text-brand-600 hover:text-brand-700 pt-2"
+            className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-brand-500 shadow-card hover:shadow-card-hover transition-all duration-300 group space-y-3"
           >
-            Open Interactive Floor Map <ArrowRight className="w-3.5 h-3.5" />
+            <div className="w-11 h-11 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Layers className="w-5 h-5" />
+            </div>
+            <h4 className="font-extrabold text-[#101828] text-base group-hover:text-brand-700 transition-colors">
+              Stall Selection & Details
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Explore interactive multi-hall floor plans, choose vacant booths, manage showcased products, and assign staff.
+            </p>
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-bold text-brand-700">
+              Manage Stalls <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          <Link
+            to="/exhibitor/applications"
+            className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-accent-500 shadow-card hover:shadow-card-hover transition-all duration-300 group space-y-3"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-accent-50 text-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Store className="w-5 h-5" />
+            </div>
+            <h4 className="font-extrabold text-[#101828] text-base group-hover:text-accent-600 transition-colors">
+              Trade Show Applications
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Submit company documentation, track real-time approval status, and view allocated hall slots.
+            </p>
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-bold text-accent-600">
+              My Submissions <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          <Link
+            to="/exhibitor/profile"
+            className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-emerald-500 shadow-card hover:shadow-card-hover transition-all duration-300 group space-y-3"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <h4 className="font-extrabold text-[#101828] text-base group-hover:text-emerald-700 transition-colors">
+              Company Showcase & Brand
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Customize company bio, contact information, social links, and public directory visibility for buyers.
+            </p>
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+              Edit Showcase <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          <Link
+            to="/exhibitor/messages"
+            className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-500 shadow-card hover:shadow-card-hover transition-all duration-300 group space-y-3"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <h4 className="font-extrabold text-[#101828] text-base group-hover:text-blue-700 transition-colors">
+              Buyer Networking & Leads
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Chat directly with delegates inquiring about your stall, negotiate deals, and exchange corporate contact cards.
+            </p>
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-bold text-blue-700">
+              Open Chat Room <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
           </Link>
         </div>
       </div>

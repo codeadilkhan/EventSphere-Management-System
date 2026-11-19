@@ -1,65 +1,116 @@
 import React from 'react';
-import { Sparkles, Heart, ShieldCheck, Globe, Code2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sparkles, ShieldCheck, Globe, Code2, ArrowUpRight, Award, Layers, Users, Building2 } from 'lucide-react';
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur-md mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="border-t border-slate-800 bg-[#101828] text-white mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Brand Info */}
-          <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-sm">
-                <Sparkles className="w-4 h-4" />
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#4338CA] to-[#FF6B35] flex items-center justify-center text-white shadow-lg shadow-brand-700/30">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-slate-900 tracking-tight">EventSphere</span>
+              <div>
+                <span className="text-xl font-black text-white tracking-tight">EventSphere</span>
+                <span className="block text-[10px] font-bold text-accent-400 uppercase tracking-widest">
+                  Enterprise Trade Show SaaS
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
-              An enterprise-grade trade show and expo virtualization suite built with the MERN stack. Digitizing booth allocation, interactive floor plans, live schedules, and attendee engagement.
+            <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+              Global virtual and in-person exhibition management platform. Engineered for seamless multi-hall booth reservations, interactive floor plans, keynote scheduling, and real-time networking.
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-              <Code2 className="w-3.5 h-3.5 text-brand-600" />
-              Aptech eProject 2026 Deliverable
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-semibold">
+              <Code2 className="w-3.5 h-3.5 text-accent-400" />
+              <span>Full-Stack MERN Architecture | Aptech 2026</span>
             </div>
           </div>
 
           {/* User Portals */}
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Portals</h4>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li><a href="/admin" className="hover:text-brand-600 transition-colors">Organizer / Admin</a></li>
-              <li><a href="/exhibitor" className="hover:text-brand-600 transition-colors">Exhibitor Hub</a></li>
-              <li><a href="/events" className="hover:text-brand-600 transition-colors">Attendee Explorer</a></li>
-              <li><a href="/login" className="hover:text-brand-600 transition-colors">Role-based Access</a></li>
+            <h4 className="text-xs font-extrabold text-accent-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5" /> Stakeholder Portals
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-400 font-medium">
+              <li>
+                <Link to="/admin" className="hover:text-white transition-colors flex items-center gap-1">
+                  Organizer Console <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link to="/exhibitor" className="hover:text-white transition-colors flex items-center gap-1">
+                  Exhibitor Commercial Hub <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link to="/events" className="hover:text-white transition-colors flex items-center gap-1">
+                  Attendee Expo Discovery <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link to="/schedule" className="hover:text-white transition-colors flex items-center gap-1">
+                  Keynote Agendas & Tracks <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link to="/exhibitors" className="hover:text-white transition-colors flex items-center gap-1">
+                  Global Exhibitors Index <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Capabilities */}
+          <div>
+            <h4 className="text-xs font-extrabold text-accent-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5" /> Core Capabilities
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-400 font-medium">
+              <li>Atomic Floor Plan Allocation</li>
+              <li>Socket.IO Live Notifications</li>
+              <li>Joi Data Sanitization & RBAC</li>
+              <li>Automated Session Reminders</li>
+              <li>Real-time Visitor Footfall</li>
+              <li>Direct Buyer-Exhibitor Chat</li>
             </ul>
           </div>
 
           {/* Security & System */}
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Security & Trust</h4>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                <span>JWT Signed Sessions</span>
+            <h4 className="text-xs font-extrabold text-accent-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" /> Compliance & Trust
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-400 font-medium">
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>JWT Encryption Enabled</span>
               </li>
               <li>
-                <a href="/privacy" className="hover:text-emerald-600 transition-colors">
-                  Privacy Policy (GDPR)
-                </a>
+                <Link to="/privacy" className="hover:text-emerald-400 transition-colors">
+                  Privacy Policy (GDPR Audit)
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="hover:text-brand-600 transition-colors">
-                  Terms of Service
-                </a>
+                <Link to="/terms" className="hover:text-emerald-400 transition-colors">
+                  Terms of Enterprise Service
+                </Link>
+              </li>
+              <li className="text-slate-500 text-[11px] pt-1">
+                Security standard ISO/IEC 27001 aligned architecture.
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-slate-100 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>&copy; {new Date().getFullYear()} EventSphere Management System. All rights reserved.</p>
-          <div className="flex items-center gap-1 text-slate-500">
-            <span>Engineered with excellence for Aptech eProject</span>
+        <div className="border-t border-slate-800/80 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+          <p>&copy; {new Date().getFullYear()} EventSphere Management System. Built with enterprise specifications.</p>
+          <div className="flex items-center gap-4 text-slate-400">
+            <span className="flex items-center gap-1">
+              <Award className="w-3.5 h-3.5 text-amber-400" /> Aptech eProject Gold Standard
+            </span>
           </div>
         </div>
       </div>
